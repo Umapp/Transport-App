@@ -6,9 +6,11 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var jshint = require('gulp-jshint');
 
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass: ['./scss/**/*.scss'],
+  js: ['./app/**/*.js']
 };
 
 gulp.task('default', ['sass']);
@@ -26,8 +28,17 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
+gulp.task('scripts', function (done) {
+    return gulp.src('app/**/*.js')
+        .pipe(jshint()) // run their contents through jshint
+        .pipe(jshint.reporter('default')) // report any findings from js
+        .pipe(concat('app.js')) // concatenate all of the file contents into a file titled 'all.js'
+        .pipe(gulp.dest('www/js'));
+});
+
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.js, ['scripts']);
 });
 
 gulp.task('install', ['git-check'], function() {

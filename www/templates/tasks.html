@@ -1,0 +1,14 @@
+<ion-view view-title="Körningar">
+  <ion-content>
+    <ion-list>
+      <div ng-repeat="task in tasks | filter:{receipted:false} | limitTo:30" href="#/app/tasks/{{task.$id}}">
+        <div class="item item-button-right positive">
+          {{task.from}} - {{task.to}}
+          <button class="button button-balanced" ng-click="showConfirm(task)">
+            Kvittera
+          </button>
+        </div>
+      </div>
+    </ion-list>
+  </ion-content>
+</ion-view>
