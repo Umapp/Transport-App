@@ -1,1 +1,42 @@
-<h1>Test</h1>
+<ion-view view-title="Körning">
+  <ion-content>
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label"><b>Datum:</b></span>
+        <span>
+          {{task.date}}
+        </span>
+      </label>
+      <label class="item item-icon-left item-input">
+        <span class="input-label"><b>Från:</b></span>
+        <span>{{task.from}}</span>
+      </label>
+      <label class="item item-input">
+        <span class="input-label"><b>Till:</b></span>
+        <span>
+          {{task.to}}
+        </span>
+      </label>
+      <label class="item item-input">
+        <span class="input-label"><b>Kund:</b></span>
+        <span>
+          {{task.customer}}
+        </span>
+      </label>
+      <label class="item item-input">
+        <span class="input-label"><b>Gods:</b></span>
+        <span>
+          {{task.goods}}
+        </span>
+      </label>
+    </div>
+    <div class="card">
+      <div class="item item-text-wrap">
+        <h2><b>Anmärkningar</b></h2>{{task.notes}}
+      </div>
+    </div>
+    <button class="button button-positive button-full" ng-click="showConfirm()">
+      Kvittera körning
+    </button>
+  </ion-content>
+</ion-view>

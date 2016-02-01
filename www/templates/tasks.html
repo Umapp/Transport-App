@@ -1,14 +1,24 @@
 <ion-view view-title="Körningar">
   <ion-content>
     <ion-list>
-      <div ng-repeat="task in tasks | filter:{receipted:false} | limitTo:30" href="#/app/tasks/{{task.$id}}">
-        <div class="item item-button-right positive">
-          {{task.from}} - {{task.to}}
-          <button class="button button-balanced" ng-click="showConfirm(task)">
-            Kvittera
-          </button>
+      <div ng-repeat="task in tasks | filter:{receipted:false} | limitTo:30" ui-sref="app.detail({ taskId: task.$id})">
+        <div class="item item-button-right item-icon-right">
+          {{$index+1}}. {{task.from}} - {{task.to}}
+          <i class="icon ion-chevron-right"></i>
         </div>
       </div>
     </ion-list>
   </ion-content>
+  <!--<div class="tabs tabs-icon-top">
+    <a class="tab-item">
+      <i class="icon ion-home"></i> Dagens körningar
+    </a>
+    <a class="tab-item">
+      <i class="icon ion-star"></i> Veckans körningar
+    </a>
+    <a class="tab-item">
+      <i class="icon ion-gear-a"></i> Kvitterade körningar
+    </a>
+  </div>
+-->
 </ion-view>
