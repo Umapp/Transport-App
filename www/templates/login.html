@@ -13,9 +13,11 @@
       </label>
     </div>
     <div class="padding">
-      <button class="button button-block button-positive" ng-click="login(user)">
+      <button class="button button-block button-positive" ng-click="login(user,site.name)">
         Logga in
       </button>
     </div>
+    <select ng-init="site=options[0]" ng-model="site" ng-options="option.name for option in options">
+    </select>
   </ion-content>
 </ion-view>

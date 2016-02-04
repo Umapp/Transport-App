@@ -1,7 +1,7 @@
 angular.module('starter')
 .factory('Tasks', function($firebaseArray, $firebaseObject, User){
   var org = User.getLoggedInOrganization();
-  var tasksRef = new Firebase('https://blistering-heat-9110.firebaseio.com/'+ org + '/tasks');
+  var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/'+ org + '/tasks');
 
   this.getAllTasks = function () {
 

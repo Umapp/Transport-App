@@ -22,8 +22,8 @@ angular.module('starter', ['ionic', 'firebase'])
     });
   })
   .constant("DATABASE", {
-    "FIREBASE": "https://blistering-heat-9110.firebaseio.com/",
-    "SESSION": "firebase:session::blistering-heat-9110"
+    "FIREBASE": "https://resplendent-fire-2851.firebaseio.com/",
+    "SESSION": "firebase:session::resplendent-fire-2851"
   })
 
 .config(function($stateProvider, $urlRouterProvider) {

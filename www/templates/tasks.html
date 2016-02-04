@@ -3,7 +3,8 @@
     <ion-list>
       <div ng-repeat="task in tasks | filter:{receipted:false} | limitTo:30" ui-sref="app.detail({ taskId: task.$id})">
         <div class="item item-button-right item-icon-right">
-          {{$index+1}}. {{task.from}} - {{task.to}}
+          <h2>{{task.from}} - {{task.to}}</h2>
+          <p>{{task.driver}}</p>
           <i class="icon ion-chevron-right"></i>
         </div>
       </div>

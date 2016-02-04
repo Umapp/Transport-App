@@ -22,8 +22,8 @@ angular.module('starter', ['ionic', 'firebase'])
     });
   })
   .constant("DATABASE", {
-    "FIREBASE": "https://blistering-heat-9110.firebaseio.com/",
-    "SESSION": "firebase:session::blistering-heat-9110"
+    "FIREBASE": "https://resplendent-fire-2851.firebaseio.com/",
+    "SESSION": "firebase:session::resplendent-fire-2851"
   })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -63,6 +63,50 @@ angular.module('starter', ['ionic', 'firebase'])
 });
 
 angular.module('starter')
+.factory('Tasks', function($firebaseArray, $firebaseObject, User){
+  var org = User.getLoggedInOrganization();
+  var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/'+ org + '/tasks');
+
+  this.getAllTasks = function () {
+
+      //console.log('TASKSREF=' + org);
+      return $firebaseArray(tasksRef);
+  };
+
+  this.getCurrentTask = function (task) {
+      var ref = new Firebase(tasksRef + '/' + task.$id);
+      return $firebaseObject(ref);
+  };
+
+  this.getTask = function(id){
+    var ref = new Firebase(tasksRef + '/' + id);
+    return $firebaseObject(ref);
+  };
+
+  return this;
+});
+
+angular.module('starter')
+  .factory('User', function(DATABASE) {
+    this.getLoggedInUser = function() {
+      var user = localStorage.getItem(DATABASE.SESSION);
+      if (user) {
+        return JSON.parse(user);
+      }
+    };
+
+    this.getLoggedInOrganization = function() {
+      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
+      var organization = parsed.auth.organization;
+      if (organization) {
+        return organization;
+      }
+    };
+
+    return this;
+  });
+
+angular.module('starter')
 
 .controller('AppCtrl', function($scope, $ionicModal, User, $window, $state, DATABASE, $ionicHistory) {
 
@@ -88,11 +132,33 @@ angular.module('starter')
 angular.module('starter')
   .controller('loginCtrl', function($scope, DATABASE, $ionicPopup, $http, $state, $timeout) {
 
-    var ref = new Firebase('https://blistering-heat-9110.firebaseio.com/');
+    var ref = new Firebase('https://resplendent-fire-2851.firebaseio.com/');
 
-    $scope.login = function(user) {
+    var DemoSite = 'http://transport-demo.herokuapp.com/api/authenticate';
+    var ProdSite = 'http://transport-umapp.herokuapp.com/api/authenticate';
+
+    var DemoFb = '';
+    var ProdFb = '';
+
+    $scope.options = [{
+      name: 'Standard'
+    }, {
+      name: 'Demo'
+    }];
+
+    //$scope.site = 'Demo';
+
+    $scope.login = function(user, site) {
+      var auth, fb;
+
+      if (site === 'Standard') {
+        auth = ProdSite;
+        //fb = ProdFb;
+      } else {
+        auth = DemoSite;
+      }
       console.log('Logging in');
-      $http.post('http://transport-umapp.herokuapp.com/api/authenticate', {
+      $http.post(auth, {
         name: user.username,
         password: user.password
       }).then(function(res) {
@@ -102,8 +168,8 @@ angular.module('starter')
                 console.log("Authentication Failed!", error);
               } else {
                 console.log("Authenticated successfully:", authData);
-                  //$rootScope.loggedInUser = authData.auth.user;
-                  $state.go('app.tasks');
+                //$rootScope.loggedInUser = authData.auth.user;
+                $state.go('app.tasks');
               }
             }, {
               remember: "default"
@@ -148,49 +214,4 @@ angular.module('starter')
   .controller('TaskListCtrl', function($scope, Tasks, $ionicPopup) {
     $scope.tasks = Tasks.getAllTasks();
     
-  });
-
-angular.module('starter')
-.factory('Tasks', function($firebaseArray, $firebaseObject, User){
-  var org = User.getLoggedInOrganization();
-  var tasksRef = new Firebase('https://blistering-heat-9110.firebaseio.com/'+ org + '/tasks');
-
-  this.getAllTasks = function () {
-
-      //console.log('TASKSREF=' + org);
-      return $firebaseArray(tasksRef);
-  };
-
-  this.getCurrentTask = function (task) {
-      var ref = new Firebase(tasksRef + '/' + task.$id);
-      return $firebaseObject(ref);
-  };
-
-  this.getTask = function(id){
-    var ref = new Firebase(tasksRef + '/' + id);
-    return $firebaseObject(ref);
-  };
-
-  return this;
-});
-
-angular.module('starter')
-  .factory('User', function(DATABASE) {
-
-    this.getLoggedInUser = function() {
-      var user = localStorage.getItem(DATABASE.SESSION);
-      if (user) {
-        return JSON.parse(user);
-      }
-    };
-
-    this.getLoggedInOrganization = function() {
-      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
-      var organization = parsed.auth.organization;
-      if (organization) {
-        return organization;
-      }
-    };
-
-    return this;
   });
