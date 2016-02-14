@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'firebase'])
+angular.module('starter', ['ionic', 'firebase', 'ngCordova'])
 
 .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
@@ -63,54 +63,35 @@ angular.module('starter', ['ionic', 'firebase'])
 });
 
 angular.module('starter')
-.factory('Tasks', function($firebaseArray, $firebaseObject, User){
-  var org = User.getLoggedInOrganization();
-  var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/'+ org + '/tasks');
 
-  this.getAllTasks = function () {
-
-      //console.log('TASKSREF=' + org);
-      return $firebaseArray(tasksRef);
-  };
-
-  this.getCurrentTask = function (task) {
-      var ref = new Firebase(tasksRef + '/' + task.$id);
-      return $firebaseObject(ref);
-  };
-
-  this.getTask = function(id){
-    var ref = new Firebase(tasksRef + '/' + id);
-    return $firebaseObject(ref);
-  };
-
-  return this;
-});
-
-angular.module('starter')
-  .factory('User', function(DATABASE) {
-    this.getLoggedInUser = function() {
-      var user = localStorage.getItem(DATABASE.SESSION);
-      if (user) {
-        return JSON.parse(user);
-      }
-    };
-
-    this.getLoggedInOrganization = function() {
-      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
-      var organization = parsed.auth.organization;
-      if (organization) {
-        return organization;
-      }
-    };
-
-    return this;
-  });
-
-angular.module('starter')
-
-.controller('AppCtrl', function($scope, $ionicModal, User, $window, $state, DATABASE, $ionicHistory) {
+.controller('AppCtrl', function($scope, $ionicModal, User, Drivers, $window, $state, DATABASE, $ionicHistory, $cordovaGeolocation) {
 
   var ref = new Firebase(DATABASE.FIREBASE);
+
+
+  $scope.lat = '';
+  $scope.long = '';
+
+  var posOptions = {
+    timeout: 10000,
+    enableHighAccuracy: false
+  };
+
+  setInterval(function() {
+    $cordovaGeolocation.getCurrentPosition(posOptions)
+      .then(function(position) {
+          Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
+          $scope.lat = position.coords.latitude;
+          $scope.long = position.coords.longitude;
+
+          console.log($scope.lat, $scope.long);
+
+        },
+        function(err) {
+          // error
+        });
+  }, 3000);
+
   $scope.logout = function() {
 
     $ionicHistory.clearCache().then(function() {
@@ -213,5 +194,70 @@ angular.module('starter')
 angular.module('starter')
   .controller('TaskListCtrl', function($scope, Tasks, $ionicPopup) {
     $scope.tasks = Tasks.getAllTasks();
-    
+
+
+  });
+
+angular.module('starter')
+  .factory('Drivers', function($firebaseArray, $firebaseObject, User) {
+    var user = User.getLoggedInUser();
+    var org = User.getLoggedInOrganization();
+    var ref = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/drivers');
+    var currentDriver = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/drivers/' + user);
+
+    this.getAllDrivers = function() {
+      return $firebaseArray(ref);
+    };
+
+    this.setCurrentPosition = function(lat, long) {
+      currentDriver.child('position').child('lat').set(lat);
+      currentDriver.child('position').child('long').set(long);
+      currentDriver.child('position').child('timestamp').set(Firebase.ServerValue.TIMESTAMP);
+    };
+
+    return this;
+  });
+
+angular.module('starter')
+.factory('Tasks', function($firebaseArray, $firebaseObject, User){
+  var org = User.getLoggedInOrganization();
+  console.log(org);
+  var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/'+ org + '/tasks');
+
+  this.getAllTasks = function () {
+      return $firebaseArray(tasksRef);
+  };
+
+  this.getCurrentTask = function (task) {
+      var ref = new Firebase(tasksRef + '/' + task.$id);
+      return $firebaseObject(ref);
+  };
+
+  this.getTask = function(id){
+    var ref = new Firebase(tasksRef + '/' + id);
+    return $firebaseObject(ref);
+  };
+
+  return this;
+});
+
+angular.module('starter')
+  .factory('User', function(DATABASE) {
+    this.getLoggedInUser = function() {
+      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
+      var user = parsed.auth.name;
+      if (user) {
+        return user;
+      }
+    };
+
+    this.getLoggedInOrganization = function() {
+      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
+      var organization = parsed.auth.organization;
+      if (organization) {
+        return organization;
+      }
+    };
+
+    return this;
   });

@@ -1,9 +1,10 @@
 angular.module('starter')
   .factory('User', function(DATABASE) {
     this.getLoggedInUser = function() {
-      var user = localStorage.getItem(DATABASE.SESSION);
+      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
+      var user = parsed.auth.name;
       if (user) {
-        return JSON.parse(user);
+        return user;
       }
     };
 

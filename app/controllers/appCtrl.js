@@ -1,8 +1,33 @@
 angular.module('starter')
 
-.controller('AppCtrl', function($scope, $ionicModal, User, $window, $state, DATABASE, $ionicHistory) {
+.controller('AppCtrl', function($scope, $ionicModal, User, Drivers, $window, $state, DATABASE, $ionicHistory, $cordovaGeolocation) {
 
   var ref = new Firebase(DATABASE.FIREBASE);
+
+
+  $scope.lat = '';
+  $scope.long = '';
+
+  var posOptions = {
+    timeout: 10000,
+    enableHighAccuracy: false
+  };
+
+  setInterval(function() {
+    $cordovaGeolocation.getCurrentPosition(posOptions)
+      .then(function(position) {
+          Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
+          $scope.lat = position.coords.latitude;
+          $scope.long = position.coords.longitude;
+
+          console.log($scope.lat, $scope.long);
+
+        },
+        function(err) {
+          // error
+        });
+  }, 3000);
+
   $scope.logout = function() {
 
     $ionicHistory.clearCache().then(function() {
