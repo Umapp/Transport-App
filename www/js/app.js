@@ -80,6 +80,8 @@ angular.module('starter')
 
   $scope.lat = '';
   $scope.long = '';
+  
+  $scope.currentuser;
 
   var posOptions = {
     timeout: 10000,
@@ -99,7 +101,7 @@ angular.module('starter')
         function(err) {
           // error
         });
-  }, 3000);
+  }, 5000);
 
   $scope.logout = function() {
 
@@ -158,7 +160,6 @@ angular.module('starter')
                 console.log("Authentication Failed!", error);
               } else {
                 console.log("Authenticated successfully:", authData);
-                //$rootScope.loggedInUser = authData.auth.user;
                 $state.go('app.tasks');
               }
             }, {
@@ -201,11 +202,10 @@ angular.module('starter')
   });
 
 angular.module('starter')
-  .controller('TaskListCtrl', function($scope, Tasks, $ionicPopup) {
-    $scope.tasks = Tasks.getAllTasks();
-
-
-  });
+    .controller('TaskListCtrl', function ($scope, Tasks, $ionicPopup, User) {
+        $scope.tasks = Tasks.getAllTasks();
+        $scope.loggedInUser = User.getLoggedInUser();
+    });
 
 angular.module('starter')
     .controller('TimeCtrl', function ($scope, $ionicPopup, $state) {
@@ -233,27 +233,27 @@ angular.module('starter')
   });
 
 angular.module('starter')
-.factory('Tasks', function($firebaseArray, $firebaseObject, User){
-  var org = User.getLoggedInOrganization();
-  console.log(org);
-  var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/'+ org + '/tasks');
+    .factory('Tasks', function ($firebaseArray, $firebaseObject, User) {
+        var org = User.getLoggedInOrganization();
+        console.log(org);
+        var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/tasks');
 
-  this.getAllTasks = function () {
-      return $firebaseArray(tasksRef);
-  };
+        this.getAllTasks = function () {
+            return $firebaseArray(tasksRef);
+        };
 
-  this.getCurrentTask = function (task) {
-      var ref = new Firebase(tasksRef + '/' + task.$id);
-      return $firebaseObject(ref);
-  };
+        this.getCurrentTask = function (task) {
+            var ref = new Firebase(tasksRef + '/' + task.$id);
+            return $firebaseObject(ref);
+        };
 
-  this.getTask = function(id){
-    var ref = new Firebase(tasksRef + '/' + id);
-    return $firebaseObject(ref);
-  };
+        this.getTask = function (id) {
+            var ref = new Firebase(tasksRef + '/' + id);
+            return $firebaseObject(ref);
+        };
 
-  return this;
-});
+        return this;
+    });
 
 angular.module('starter')
   .factory('User', function(DATABASE) {

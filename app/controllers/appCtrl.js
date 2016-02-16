@@ -7,6 +7,8 @@ angular.module('starter')
 
   $scope.lat = '';
   $scope.long = '';
+  
+  $scope.currentuser;
 
   var posOptions = {
     timeout: 10000,
@@ -26,7 +28,7 @@ angular.module('starter')
         function(err) {
           // error
         });
-  }, 3000);
+  }, 5000);
 
   $scope.logout = function() {
 

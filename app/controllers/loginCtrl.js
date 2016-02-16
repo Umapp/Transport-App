@@ -37,7 +37,6 @@ angular.module('starter')
                 console.log("Authentication Failed!", error);
               } else {
                 console.log("Authenticated successfully:", authData);
-                //$rootScope.loggedInUser = authData.auth.user;
                 $state.go('app.tasks');
               }
             }, {
