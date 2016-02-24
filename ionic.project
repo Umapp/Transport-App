@@ -1,4 +1,12 @@
 {
   "name": "Transport-App",
-  "app_id": "21ce1892"
+  "app_id": "21ce1892",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
+  ]
 }

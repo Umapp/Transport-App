@@ -1,0 +1,23 @@
+.tidsrapportering{
+    background: url('../img/umea-map.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    opacity: 0.5;
+    .header-timeworked{
+        margin:auto;
+        font-size:20px;
+        text-align: center;
+        .time{
+                font-size:35px
+            }
+        .comments{
+            padding-top:20px;
+        }
+    }
+    .checkbutton{
+        bottom:0;
+        margin-bottom:20px;
+    }
+}

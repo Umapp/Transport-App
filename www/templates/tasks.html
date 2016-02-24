@@ -1,14 +1,15 @@
 <ion-view view-title="Körningar">
     <ion-content>
         <ion-list>
-            <div ng-repeat="task in tasks | filter:{receipted:false} | filter:{driver:loggedInUser}| limitTo:30" ui-sref="app.detail({ taskId: task.$id})">
+            <div collection-repeat="task in tasks | filter:{receipted:false} | filter:{driver:loggedInUser} | orderBy:'date'" ui-sref="app.detail({ taskId: task.$id})">
                 <div class="item item-button-right item-icon-right">
-                    <h2>{{task.from}} - {{task.to}}</h2>
-                    <p>{{task.date}}</p>
+                    <h3>ID: {{task.ID}}</h3>
+                    <p>Datum: {{task.date}}</p>
+                    <p>Från: {{task.from}}</p>
+                    <p>Till: {{task.to}}</p>
                     <i class="icon ion-chevron-right"></i>
                 </div>
             </div>
         </ion-list>
     </ion-content>
--->
 </ion-view>

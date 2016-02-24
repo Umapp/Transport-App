@@ -25,6 +25,9 @@ angular.module('starter', ['ionic', 'firebase', 'ngCordova'])
         "FIREBASE": "https://resplendent-fire-2851.firebaseio.com/",
         "SESSION": "firebase:session::resplendent-fire-2851"
     })
+    .constant('SW_DELAY', 1000)
+    
+    
 
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider

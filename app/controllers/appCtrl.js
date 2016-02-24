@@ -21,7 +21,6 @@ angular.module('starter')
           Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
           $scope.lat = position.coords.latitude;
           $scope.long = position.coords.longitude;
-
           console.log($scope.lat, $scope.long);
 
         },
