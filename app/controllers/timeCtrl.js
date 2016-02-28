@@ -3,8 +3,6 @@ angular.module('starter')
 
         $scope.today = Drivers.getToday()
         $scope.now = moment().format();
-        
-        
 
         $scope.checkin = function () {
             Drivers.checkIn();

@@ -28,7 +28,45 @@
             </div>
         </div>
         <div class="item item-divider">
-            Körning klar
+            Körning
+        </div>
+        <label class="item item-input" ng-show="!task.started">
+            <span class="input-label"><b>Start Mätarställning:</b></span>
+            <input type="text" ng-model="task.startDistance">
+        </label>
+        <button class="button button-positive button-full" ng-click="startTask()" ng-disabled="!task.startDistance" ng-show="!task.started">
+            Påbörja körning
+        </button>
+        <label class="item item-input" ng-show="task.started">
+            <span class="input-label"><b>Stopp Mätarställning:</b></span>
+            <input type="text" ng-model="task.stoppedDistance">
+        </label>
+        <button class="button button-positive button-full" ng-click="showConfirm()" ng-show="task.started" ng-disabled="!task.stoppedDistance" >
+            Avsluta körning
+        </button>
+        
+        <!-- LASTNING -->
+        <div class="item item-divider" ng-show="!task.stopUnload">
+            Lastning / Lossning
+        </div>
+        <button class="button button-positive button-full" ng-click="startLoading()" ng-disabled="!task.started" ng-show="!task.startLoad">
+            Påbörja lastning
+        </button>
+        <button class="button button-positive button-full" ng-click="stopLoading()" ng-show="task.startLoad && !task.stopLoad">
+            Avsluta lastning
+        </button>
+        
+        <button class="button button-positive button-full" ng-click="startUnloading()" ng-show="task.stopLoad && !task.startUnload">
+            Påbörja lossning
+        </button>
+        <button class="button button-positive button-full" ng-click="stopUnloading()" ng-show="task.startUnload && !task.stopUnload">
+            Avsluta lossning
+        </button>
+        
+        
+        
+        <div class="item item-divider">
+            Manuell tid
         </div>
         <label class="item item-input">
             <span class="input-label"><b>Tid:</b></span>
