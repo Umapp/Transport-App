@@ -1,6 +1,10 @@
-<ion-view view-title="Körning">
+<ion-view view-title="Körning" class="tasks">
     <ion-content>
-        <div class="list">
+        <div class="list list-top">
+            <label class="item item-input">
+                <span class="input-label"><b>ID:</b></span>
+                <span>{{task.ID}}</span>
+            </label>
             <label class="item item-input">
                 <span class="input-label"><b>Datum:</b></span>
                 <span>{{task.date}}</span>
@@ -21,7 +25,7 @@
                 <span class="input-label"><b>Gods:</b></span>
                 <span>{{task.goods}}</span>
             </label>
-            <div class="card">
+            <div class="card" ng-show="task.notes">
                 <div class="item item-text-wrap">
                     <h2><b>Anmärkningar</b></h2>{{task.notes}}
                 </div>

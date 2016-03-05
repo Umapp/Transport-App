@@ -19,12 +19,21 @@ $positive:                      #3973ac !default;
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 
+
+
 // Include all of Ionic
+
+$positive: #38A8F1;
+
+.nav-bar-title{
+    font-size:20px;
+}
 
 
 @import "www/lib/ionic/scss/ionic";
 @import "tidsrapportering.scss";
-
-//$positive:                      #ff5050 !default;
+@import "login.scss";
+@import "korningslist.scss";
+@import "task.scss";
 
 

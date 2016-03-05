@@ -1,23 +1,19 @@
-<ion-view view-title="Transportplanering">
-  <ion-nav-bar class="bar-light">
-  </ion-nav-bar>
-  <ion-content>
-    <div class="list">
-      <label class="item item-input">
-        <span class="input-label">Användarnamn</span>
-        <input type="text" ng-model="user.username">
-      </label>
-      <label class="item item-input">
-        <span class="input-label">Lösenord</span>
-        <input type="password" ng-model="user.password">
-      </label>
-    </div>
-    <div class="padding">
-      <button class="button button-block button-positive" ng-click="login(user,site.name)">
-        Logga in
-      </button>
-    </div>
-    <select ng-init="site=options[0]" ng-model="site" ng-options="option.name for option in options">
-    </select>
-  </ion-content>
+<ion-view view-title="Transportplanering" class="login">
+    <ion-content>
+        <form>
+            <div class="login-logo">
+                <img src="img/Logo.png" alt="">
+            </div>
+            <input type="text" placeholder="Användarnamn" ng-model="user.username" class="login-text login-text-username">
+            <input type="password" placeholder="Lösenord" ng-model="user.password" class="login-text">
+            <input type="button" class="button button-positive login-button" value="Logga in" ng-click="login(user, site.name)">
+
+        </form>
+        </div>
+        <div class="padding">
+            <select ng-init="site=options[0]" ng-model="site" ng-options="option.name for option in options">
+            </select>
+        </div>
+
+    </ion-content>
 </ion-view>

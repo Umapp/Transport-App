@@ -16,6 +16,13 @@ angular.module('starter')
             }];
 
         //$scope.site = 'Demo';
+        
+        function loginError() {
+            $ionicPopup.alert({
+                title: 'Inloggning misslyckades',
+                template: 'Kontrollera användarnamn och lösenord.'
+            });
+        }
 
         $scope.login = function (user, site) {
             var auth, fb;
@@ -27,7 +34,9 @@ angular.module('starter')
                 auth = DemoSite;
             }
             $ionicLoading.show({
-                template: 'Loggar in...'
+                template: '<ion-spinner></ion-spinner>',
+                hideOnStageChange: true
+                //template: 'Loggar in...'
             });
             console.log('Logging in');
             $http.post(auth, {
@@ -39,22 +48,25 @@ angular.module('starter')
                         if (error) {
                             console.log("Authentication Failed!", error);
                             $ionicLoading.hide();
+                            loginError();
                         } else {
                             $ionicLoading.hide();
                             console.log("Authenticated successfully:", authData);
                             $state.go('app.tasks');
-                            
+
                         }
                     }, {
                             remember: "default"
                         });
                 } else {
                     console.log(res.data.message);
-                    $scope.errorMessage = "Du har antingen angivit felaktiga inloggningsuppgifter eller så har din användare inaktiverats.";
+                    loginError();
                     $ionicLoading.hide();
                 }
             }, function (err) {
                 console.log("Authentication server error: " + err);
+                loginError();
+                $ionicLoading.hide();
             }
 
                 );
