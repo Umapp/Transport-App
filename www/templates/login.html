@@ -9,11 +9,19 @@
             <input type="button" class="button button-positive login-button" value="Logga in" ng-click="login(user, site.name)">
 
         </form>
-        </div>
+    
+        <form>
+        <input type="button" class="button button-balanced" value="Klicka här för Demoanvändare" ng-click="loginDemo()">
+        </form>
+
+
+
+        <!--
         <div class="padding">
             <select ng-init="site=options[0]" ng-model="site" ng-options="option.name for option in options">
             </select>
         </div>
+        -->
 
     </ion-content>
 </ion-view>

@@ -9787,6 +9787,12 @@ a.button {
       border-radius: 0;
       background-color: #38A8F1; }
 
+.demomiljo {
+  padding-top: 50px;
+  padding-left: 15px; }
+  .demomiljo p {
+    color: white; }
+
 .korningar h2 {
   font-style: bold;
   font-size: 17px; }
@@ -9796,6 +9802,10 @@ a.button {
   .korningar .item-icon i {
     font-size: 22px;
     margin-left: -7px; }
+
+.korningar .item {
+  border-left: 6px #38A8F1;
+  border-style: solid; }
 
 .korningar .item-align {
   margin: auto; }

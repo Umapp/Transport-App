@@ -4,13 +4,13 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    
+
     //opacity: 0.5 !important;
-    
-    form{ 
+
+    form{
         padding-top:40px;
         margin:auto;
-        
+
         .login-logo{
             width:70%;
             margin:auto;
@@ -18,28 +18,28 @@
         img{
             width:100%;
         }
-        
+
         h1,h2,h3{
             color:white;
             text-align: center;
         }
-        
+
         input{
             margin:auto;
             width:90%;
             display:block;
             border-radius:0;
-            
+
         }
-        
+
         .login-text{
             padding:15px;
             padding-top:25px;
             padding-bottom:25px;
             height:40px;
-            
-        }   
-        
+
+        }
+
         .login-text-username{
             border-bottom:1px solid rgba(192, 192, 192, 0.5);
         }
@@ -49,6 +49,16 @@
                 border-radius: 0;
                 background-color:#38A8F1;
             }
-        
+
     }
+
+}
+
+.demomiljo{
+    padding-top:50px;
+    padding-left:15px;
+    p{
+        color:white;
+    }
+
 }
