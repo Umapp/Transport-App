@@ -1,13 +1,13 @@
 angular.module('starter')
-    .factory('Drivers', function ($firebaseArray, $firebaseObject, User, $q) {
+    .factory('Drivers', function ($firebaseArray, $firebaseObject, User, $q, DATABASE) {
         var user = User.getLoggedInUser();
         var org = User.getLoggedInOrganization();
 
         var today = moment().format('YYYYMMDD');
 
-        var ref = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/drivers');
-        var currentDriver = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/drivers/' + user);
-        var time = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/times');
+        var ref = new Firebase(DATABASE.FIREBASE+ org + '/drivers');
+        var currentDriver = new Firebase(DATABASE.FIREBASE + org + '/drivers/' + user);
+        var time = new Firebase(DATABASE.FIREBASE + org + '/times');
 
         this.getAllDrivers = function () {
             return $firebaseArray(ref);

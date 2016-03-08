@@ -81,71 +81,62 @@ angular.module('starter')
     })
 angular.module('starter')
 
-.controller('AppCtrl', function($scope, $ionicModal, User, Drivers, $window, $state, DATABASE, $ionicHistory, $cordovaGeolocation) {
+    .controller('AppCtrl', function($scope, $ionicModal, User, Drivers, $window, $state, DATABASE, $ionicHistory, $cordovaGeolocation, $rootScope) {
 
-  var ref = new Firebase(DATABASE.FIREBASE);
+        var ref = new Firebase(DATABASE.FIREBASE);
 
 
-  $scope.lat = '';
-  $scope.long = '';
-  
-  $scope.currentuser;
+        $scope.lat = '';
+        $scope.long = '';
 
-  var posOptions = {
-    timeout: 10000,
-    enableHighAccuracy: false
-  };
+        var posOptions = {
+            timeout: 10000,
+            enableHighAccuracy: false
+        };
 
-  setInterval(function() {
-    $cordovaGeolocation.getCurrentPosition(posOptions)
-      .then(function(position) {
-          Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
-          $scope.lat = position.coords.latitude;
-          $scope.long = position.coords.longitude;
-          console.log($scope.lat, $scope.long);
+        setInterval(function() {
+            if ($rootScope.currentuser) {
+                $cordovaGeolocation.getCurrentPosition(posOptions)
+                    .then(function(position) {
+                        Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
+                        $scope.lat = position.coords.latitude;
+                        $scope.long = position.coords.longitude;
+                        console.log(position);
+                    },
+                    function(err) {
+                        // error
+                    });
+            }
+        }, 5000);
 
-        },
-        function(err) {
-          // error
-        });
-  }, 5000);
+        $scope.logout = function() {
 
-  $scope.logout = function() {
+            $ionicHistory.clearCache().then(function() {
+                ref.unauth();
+                $rootScope.currentuser = null;
+                $window.localStorage.clear();
+                $ionicHistory.clearCache();
+                //now you can clear history or goto another state if you need
+                $ionicHistory.clearHistory();
+                $ionicHistory.nextViewOptions({
+                    disableBack: true,
+                    historyRoot: true
+                });
+                $state.go('signin');
+            });
+        };
 
-    $ionicHistory.clearCache().then(function() {
-      ref.unauth();
-      $window.localStorage.clear();
-      $ionicHistory.clearCache();
-      //now you can clear history or goto another state if you need
-      $ionicHistory.clearHistory();
-      $ionicHistory.nextViewOptions({
-        disableBack: true,
-        historyRoot: true
-      });
-      $state.go('signin');
     });
-  };
-
-});
 
 angular.module('starter')
-    .controller('loginCtrl', function ($scope, DATABASE, $ionicPopup, $http, $state, $timeout, $ionicLoading) {
+    .controller('loginCtrl', function($scope, DATABASE, $ionicPopup, $http, $state, $timeout, $ionicLoading, $rootScope) {
 
-        var ref = new Firebase('https://resplendent-fire-2851.firebaseio.com/');
+        var ref = new Firebase(DATABASE.FIREBASE);
 
-        var DemoSite = 'http://transport-demo.herokuapp.com/api/authenticate';
-        var ProdSite = 'http://transport-umapp.herokuapp.com/api/authenticate';
+        var ProdSite = 'https://transport-umapp.herokuapp.com/api/authenticate';
 
-        var DemoFb = '';
-        var ProdFb = '';
 
-        $scope.options = [{
-            name: 'Standard'
-        }, {
-                name: 'Demo'
-            }];
-
-        //$scope.site = 'Demo';
+        $scope.currentuser;
 
         function loginError() {
             $ionicPopup.alert({
@@ -154,15 +145,9 @@ angular.module('starter')
             });
         }
 
-        $scope.login = function (user, site) {
-            var auth, fb;
-
-            if (site === 'Standard') {
-                auth = ProdSite;
-                //fb = ProdFb;
-            } else {
-                auth = DemoSite;
-            }
+        $scope.login = function(user, site) {
+            auth = ProdSite;
+            
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>',
                 hideOnStageChange: true
@@ -172,9 +157,9 @@ angular.module('starter')
             $http.post(auth, {
                 name: user.username,
                 password: user.password
-            }).then(function (res) {
+            }).then(function(res) {
                 if (res.data.success === true) {
-                    ref.authWithCustomToken(res.data.token, function (error, authData) {
+                    ref.authWithCustomToken(res.data.token, function(error, authData) {
                         if (error) {
                             console.log("Authentication Failed!", error);
                             $ionicLoading.hide();
@@ -182,6 +167,7 @@ angular.module('starter')
                         } else {
                             $ionicLoading.hide();
                             console.log("Authenticated successfully:", authData);
+                            $rootScope.currentuser = authData.auth.name;
                             $state.go('app.tasks');
 
                         }
@@ -193,51 +179,7 @@ angular.module('starter')
                     loginError();
                     $ionicLoading.hide();
                 }
-            }, function (err) {
-                console.log("Authentication server error: " + err);
-                loginError();
-                $ionicLoading.hide();
-            }
-
-                );
-        };
-
-        $scope.loginDemo = function () {
-            var fb;
-
-            auth = DemoSite;
-
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>',
-                hideOnStageChange: true
-                //template: 'Loggar in...'
-            });
-            console.log('Logging in');
-            $http.post(auth, {
-                name: "Demo",
-                password: "password"
-            }).then(function (res) {
-                if (res.data.success === true) {
-                    ref.authWithCustomToken(res.data.token, function (error, authData) {
-                        if (error) {
-                            console.log("Authentication Failed!", error);
-                            $ionicLoading.hide();
-                            loginError();
-                        } else {
-                            $ionicLoading.hide();
-                            console.log("Authenticated successfully:", authData);
-                            $state.go('app.tasks');
-
-                        }
-                    }, {
-                            remember: "default"
-                        });
-                } else {
-                    console.log(res.data.message);
-                    loginError();
-                    $ionicLoading.hide();
-                }
-            }, function (err) {
+            }, function(err) {
                 console.log("Authentication server error: " + err);
                 loginError();
                 $ionicLoading.hide();
@@ -317,15 +259,15 @@ angular.module('starter')
     });
 
 angular.module('starter')
-    .factory('Drivers', function ($firebaseArray, $firebaseObject, User, $q) {
+    .factory('Drivers', function ($firebaseArray, $firebaseObject, User, $q, DATABASE) {
         var user = User.getLoggedInUser();
         var org = User.getLoggedInOrganization();
 
         var today = moment().format('YYYYMMDD');
 
-        var ref = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/drivers');
-        var currentDriver = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/drivers/' + user);
-        var time = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/times');
+        var ref = new Firebase(DATABASE.FIREBASE+ org + '/drivers');
+        var currentDriver = new Firebase(DATABASE.FIREBASE + org + '/drivers/' + user);
+        var time = new Firebase(DATABASE.FIREBASE + org + '/times');
 
         this.getAllDrivers = function () {
             return $firebaseArray(ref);
@@ -360,10 +302,10 @@ angular.module('starter')
     });
 
 angular.module('starter')
-    .factory('Tasks', function ($firebaseArray, $firebaseObject, User) {
+    .factory('Tasks', function ($firebaseArray, $firebaseObject, User, DATABASE) {
         var org = User.getLoggedInOrganization();
         console.log(org);
-        var tasksRef = new Firebase('https://resplendent-fire-2851.firebaseio.com/' + org + '/tasks');
+        var tasksRef = new Firebase(DATABASE.FIREBASE + org + '/tasks');
 
         this.getAllTasks = function () {
             return $firebaseArray(tasksRef);
