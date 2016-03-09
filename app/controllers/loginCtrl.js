@@ -3,11 +3,7 @@ angular.module('starter')
 
         var ref = new Firebase(DATABASE.FIREBASE);
 
-        var ProdSite = 'https://transport-umapp.herokuapp.com/api/authenticate';
-
-
-        $scope.currentuser;
-
+        var ProdSite = 'https://transport-umapp.herokuapp.com/api/authenticate'; 
         function loginError() {
             $ionicPopup.alert({
                 title: 'Inloggning misslyckades',
@@ -17,12 +13,11 @@ angular.module('starter')
 
         $scope.login = function(user, site) {
             auth = ProdSite;
-            
+
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>',
                 hideOnStageChange: true
-                //template: 'Loggar in...'
-            });
+            })
             console.log('Logging in');
             $http.post(auth, {
                 name: user.username,
@@ -34,17 +29,17 @@ angular.module('starter')
                             console.log("Authentication Failed!", error);
                             $ionicLoading.hide();
                             loginError();
-                        } else {
+                        }
+                        else {
                             $ionicLoading.hide();
                             console.log("Authenticated successfully:", authData);
                             $rootScope.currentuser = authData.auth.name;
                             $state.go('app.tasks');
 
                         }
-                    }, {
-                            remember: "default"
-                        });
-                } else {
+                    });
+                }
+                else {
                     console.log(res.data.message);
                     loginError();
                     $ionicLoading.hide();
@@ -53,8 +48,6 @@ angular.module('starter')
                 console.log("Authentication server error: " + err);
                 loginError();
                 $ionicLoading.hide();
-            }
-
-                );
+            });
         };
     });

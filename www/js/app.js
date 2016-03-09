@@ -6,8 +6,8 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'firebase', 'ngCordova'])
 
-    .run(function ($ionicPlatform) {
-        $ionicPlatform.ready(function () {
+    .run(function($ionicPlatform) {
+        $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
             if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -22,14 +22,14 @@ angular.module('starter', ['ionic', 'firebase', 'ngCordova'])
         });
     })
     .constant("DATABASE", {
-        "FIREBASE": "https://resplendent-fire-2851.firebaseio.com/",
-        "SESSION": "firebase:session::resplendent-fire-2851"
+        "FIREBASE": "https://transport-produktion.firebaseio.com/",
+        "SESSION": "firebase:session::transport-produktion"
     })
     .constant('SW_DELAY', 1000)
-    
-    
 
-    .config(function ($stateProvider, $urlRouterProvider) {
+
+
+    .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
             .state('app', {
                 url: '/app',
@@ -133,11 +133,7 @@ angular.module('starter')
 
         var ref = new Firebase(DATABASE.FIREBASE);
 
-        var ProdSite = 'https://transport-umapp.herokuapp.com/api/authenticate';
-
-
-        $scope.currentuser;
-
+        var ProdSite = 'https://transport-umapp.herokuapp.com/api/authenticate'; 
         function loginError() {
             $ionicPopup.alert({
                 title: 'Inloggning misslyckades',
@@ -147,12 +143,11 @@ angular.module('starter')
 
         $scope.login = function(user, site) {
             auth = ProdSite;
-            
+
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>',
                 hideOnStageChange: true
-                //template: 'Loggar in...'
-            });
+            })
             console.log('Logging in');
             $http.post(auth, {
                 name: user.username,
@@ -164,17 +159,17 @@ angular.module('starter')
                             console.log("Authentication Failed!", error);
                             $ionicLoading.hide();
                             loginError();
-                        } else {
+                        }
+                        else {
                             $ionicLoading.hide();
                             console.log("Authenticated successfully:", authData);
                             $rootScope.currentuser = authData.auth.name;
                             $state.go('app.tasks');
 
                         }
-                    }, {
-                            remember: "default"
-                        });
-                } else {
+                    });
+                }
+                else {
                     console.log(res.data.message);
                     loginError();
                     $ionicLoading.hide();
@@ -183,9 +178,7 @@ angular.module('starter')
                 console.log("Authentication server error: " + err);
                 loginError();
                 $ionicLoading.hide();
-            }
-
-                );
+            });
         };
     });
 
