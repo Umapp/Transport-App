@@ -12,26 +12,6 @@ angular.module('starter')
             enableHighAccuracy: false
         };
 
-        /*
-        
-            window.setInterval(getLoc(), 5000);
-        
-
-
-
-        function getLoc() {
-            if (processing) return;
-            processing = true;
-            $cordovaGeolocation.getCurrentPosition().then(function(position) {
-                processing = false;
-                console.log(position);
-                Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
-                $scope.lat = position.coords.latitude;
-                $scope.long = position.coords.longitude;
-                console.log(position);
-            });
-        };
-        */
         $ionicPlatform.ready(function() {
             $interval(function() {
                 navigator.geolocation.getCurrentPosition(onSuccess, onError, { timeout: 10000, enableHighAccuracy: true });
@@ -50,27 +30,6 @@ angular.module('starter')
         function onError(position) {
             console.log(position)
         };
-
-        /*
-                //setInterval(function() {
-                $ionicPlatform.ready(function() {
-                    $cordovaGeolocation.getCurrentPosition(posOptions)
-                        .then(function(position) {
-                            console.log(position);
-                            Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
-                            $scope.lat = position.coords.latitude;
-                            $scope.long = position.coords.longitude;
-                            console.log(position);
-                        },
-                        function(err) {
-                            // error
-                        });
-                });
-        
-                //}, 5000)
-                */
-
-
 
         $scope.logout = function() {
 
