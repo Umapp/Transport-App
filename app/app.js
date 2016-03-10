@@ -19,6 +19,7 @@ angular.module('starter', ['ionic', 'firebase', 'ngCordova'])
                 // org.apache.cordova.statusbar required
                 StatusBar.styleDefault();
             }
+
         });
     })
     .constant("DATABASE", {
