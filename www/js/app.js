@@ -75,58 +75,162 @@ angular.module('starter', ['ionic', 'firebase', 'ngCordova'])
     });
 
 angular.module('starter')
+    .factory('Drivers', function ($firebaseArray, $firebaseObject, User, $q, DATABASE) {
+        var user = User.getLoggedInUser();
+        var org = User.getLoggedInOrganization();
+
+        var today = moment().format('YYYYMMDD');
+
+        var ref = new Firebase(DATABASE.FIREBASE+ org + '/drivers');
+        var currentDriver = new Firebase(DATABASE.FIREBASE + org + '/drivers/' + user);
+        var time = new Firebase(DATABASE.FIREBASE + org + '/times');
+
+        this.getAllDrivers = function () {
+            return $firebaseArray(ref);
+        };
+
+        this.setCurrentPosition = function (lat, long) {
+            currentDriver.child('position').child('lat').set(lat);
+            currentDriver.child('position').child('long').set(long);
+            currentDriver.child('position').child('timestamp').set(Firebase.ServerValue.TIMESTAMP);
+        };
+
+        this.getToday = function () {
+            //var deferred = $q.defer();
+            //var objToday = $firebaseArray(currentDriver.child('dates').child(today));
+            var objToday = $firebaseObject(time.child(today).child(user))
+            return objToday
+            //deferred.resolve(objToday)
+            //return deferred.promise;
+        }
+
+        this.checkIn = function () {
+            time.child(today).child(user).child('checkin').set(moment().format('LTS'))
+            //currentDriver.child('dates').child(today).child('checkin').set(moment().format('LTS'));
+        };
+
+        this.checkOut = function () {
+            time.child(today).child(user).child('checkout').set(moment().format('LTS'))
+            //currentDriver.child('dates').child(today).child('checkout').set(moment().format('LTS'));
+        }
+
+        return this;
+    });
+
+angular.module('starter')
+    .factory('Tasks', function ($firebaseArray, $firebaseObject, User, DATABASE) {
+        var org = User.getLoggedInOrganization();
+        console.log(org);
+        var tasksRef = new Firebase(DATABASE.FIREBASE + org + '/tasks');
+
+        this.getAllTasks = function () {
+            return $firebaseArray(tasksRef);
+        };
+
+        this.getCurrentTask = function (task) {
+            var ref = new Firebase(tasksRef + '/' + task.$id);
+            return $firebaseObject(ref);
+        };
+
+        this.getTask = function (id) {
+            var ref = new Firebase(tasksRef + '/' + id);
+            return $firebaseObject(ref);
+        };
+
+        return this;
+    });
+
+angular.module('starter')
+    .factory('timeService', function () {
+       // moment().locale('sv').format('LLL');
+        this.getNow = function () {
+            return moment().format('LT')
+        }
+        
+        this.checkout = function(){
+            return moment().format('LT')
+        }
+        return this;
+
+    })
+    
+angular.module('starter')
+  .factory('User', function(DATABASE) {
+    this.getLoggedInUser = function() {
+      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
+      var user = parsed.auth.name;
+      if (user) {
+        return user;
+      }
+    };
+
+    this.getLoggedInOrganization = function() {
+      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
+      var organization = parsed.auth.organization;
+      if (organization) {
+        return organization;
+      }
+    };
+
+    return this;
+  });
+
+angular.module('starter')
     .constant("DATABASE", {
         "FIREBASE": "https://transport-produktion.firebaseio.com/",
         "SESSION": "firebase:session::transport-produktion"
     })
 angular.module('starter')
 
-    .controller('AppCtrl', function($scope, $ionicModal, User, Drivers, $window, $state, DATABASE, $ionicHistory, $cordovaGeolocation, $rootScope) {
+.controller('AppCtrl', function($scope, $ionicModal, User, Drivers, $window, $state, DATABASE, $ionicHistory, $cordovaGeolocation, $rootScope, $ionicPlatform, $timeout) {
 
-        var ref = new Firebase(DATABASE.FIREBASE);
+  var ref = new Firebase(DATABASE.FIREBASE);
 
 
-        $scope.lat = '';
-        $scope.long = '';
+  $scope.lat = '';
+  $scope.long = '';
 
-        var posOptions = {
-            timeout: 10000,
-            enableHighAccuracy: false
-        };
+  var posOptions = {
+    timeout: 10000,
+    enableHighAccuracy: false
+  };
+  $timeout(function() {
+    setInterval(function() {
+      if ($ionicPlatform.ready) {
+        if ($rootScope.currentuser) {
+          $cordovaGeolocation.getCurrentPosition(posOptions)
+            .then(function(position) {
+                Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
+                $scope.lat = position.coords.latitude;
+                $scope.long = position.coords.longitude;
+                console.log(position);
+              },
+              function(err) {
+                // error
+              });
+        }
+      }
+    }, 5000);
+  }, 5000);
 
-        setInterval(function() {
-            if ($rootScope.currentuser) {
-                $cordovaGeolocation.getCurrentPosition(posOptions)
-                    .then(function(position) {
-                        Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
-                        $scope.lat = position.coords.latitude;
-                        $scope.long = position.coords.longitude;
-                        console.log(position);
-                    },
-                    function(err) {
-                        // error
-                    });
-            }
-        }, 5000);
+  $scope.logout = function() {
 
-        $scope.logout = function() {
-
-            $ionicHistory.clearCache().then(function() {
-                ref.unauth();
-                $rootScope.currentuser = null;
-                $window.localStorage.clear();
-                $ionicHistory.clearCache();
-                //now you can clear history or goto another state if you need
-                $ionicHistory.clearHistory();
-                $ionicHistory.nextViewOptions({
-                    disableBack: true,
-                    historyRoot: true
-                });
-                $state.go('signin');
-            });
-        };
-
+    $ionicHistory.clearCache().then(function() {
+      ref.unauth();
+      $rootScope.currentuser = null;
+      $window.localStorage.clear();
+      $ionicHistory.clearCache();
+      //now you can clear history or goto another state if you need
+      $ionicHistory.clearHistory();
+      $ionicHistory.nextViewOptions({
+        disableBack: true,
+        historyRoot: true
+      });
+      $state.go('signin');
     });
+  };
+
+});
 
 angular.module('starter')
     .controller('loginCtrl', function($scope, DATABASE, $ionicPopup, $http, $state, $timeout, $ionicLoading, $rootScope) {
@@ -250,104 +354,3 @@ angular.module('starter')
             Drivers.checkOut();
         }
     });
-
-angular.module('starter')
-    .factory('Drivers', function ($firebaseArray, $firebaseObject, User, $q, DATABASE) {
-        var user = User.getLoggedInUser();
-        var org = User.getLoggedInOrganization();
-
-        var today = moment().format('YYYYMMDD');
-
-        var ref = new Firebase(DATABASE.FIREBASE+ org + '/drivers');
-        var currentDriver = new Firebase(DATABASE.FIREBASE + org + '/drivers/' + user);
-        var time = new Firebase(DATABASE.FIREBASE + org + '/times');
-
-        this.getAllDrivers = function () {
-            return $firebaseArray(ref);
-        };
-
-        this.setCurrentPosition = function (lat, long) {
-            currentDriver.child('position').child('lat').set(lat);
-            currentDriver.child('position').child('long').set(long);
-            currentDriver.child('position').child('timestamp').set(Firebase.ServerValue.TIMESTAMP);
-        };
-
-        this.getToday = function () {
-            //var deferred = $q.defer();
-            //var objToday = $firebaseArray(currentDriver.child('dates').child(today));
-            var objToday = $firebaseObject(time.child(today).child(user))
-            return objToday
-            //deferred.resolve(objToday)
-            //return deferred.promise;
-        }
-
-        this.checkIn = function () {
-            time.child(today).child(user).child('checkin').set(moment().format('LTS'))
-            //currentDriver.child('dates').child(today).child('checkin').set(moment().format('LTS'));
-        };
-
-        this.checkOut = function () {
-            time.child(today).child(user).child('checkout').set(moment().format('LTS'))
-            //currentDriver.child('dates').child(today).child('checkout').set(moment().format('LTS'));
-        }
-
-        return this;
-    });
-
-angular.module('starter')
-    .factory('Tasks', function ($firebaseArray, $firebaseObject, User, DATABASE) {
-        var org = User.getLoggedInOrganization();
-        console.log(org);
-        var tasksRef = new Firebase(DATABASE.FIREBASE + org + '/tasks');
-
-        this.getAllTasks = function () {
-            return $firebaseArray(tasksRef);
-        };
-
-        this.getCurrentTask = function (task) {
-            var ref = new Firebase(tasksRef + '/' + task.$id);
-            return $firebaseObject(ref);
-        };
-
-        this.getTask = function (id) {
-            var ref = new Firebase(tasksRef + '/' + id);
-            return $firebaseObject(ref);
-        };
-
-        return this;
-    });
-
-angular.module('starter')
-    .factory('timeService', function () {
-       // moment().locale('sv').format('LLL');
-        this.getNow = function () {
-            return moment().format('LT')
-        }
-        
-        this.checkout = function(){
-            return moment().format('LT')
-        }
-        return this;
-
-    })
-    
-angular.module('starter')
-  .factory('User', function(DATABASE) {
-    this.getLoggedInUser = function() {
-      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
-      var user = parsed.auth.name;
-      if (user) {
-        return user;
-      }
-    };
-
-    this.getLoggedInOrganization = function() {
-      var parsed = JSON.parse(localStorage.getItem(DATABASE.SESSION));
-      var organization = parsed.auth.organization;
-      if (organization) {
-        return organization;
-      }
-    };
-
-    return this;
-  });
