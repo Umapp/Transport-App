@@ -41,6 +41,7 @@ angular.module('starter')
 
         function onSuccess(position) {
             Drivers.setCurrentPosition(position.coords.latitude, position.coords.longitude);
+            $scope.message = position;
             $scope.lat = position.coords.latitude;
             $scope.long = position.coords.longitude;
             console.log(position);
